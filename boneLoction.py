@@ -122,11 +122,16 @@ class XlsBoneArray:
     def UpdateIk(self,TargetLocation:ti.math.vec3):
        n=2
        iswhile=True
+       xmin=0.5
        Xlength=(self.WorldLocation[3]-TargetLocation).norm()
+       if((self.WorldLocation[0]-TargetLocation).norm()>15.0):
+          xmin=(self.WorldLocation[0]-TargetLocation).norm()-15.0
+          xmin=xmin
+          print(xmin)
        print('xxxxx=',Xlength)
-       if(Xlength<2.0):
+       if(Xlength<xmin):
          iswhile=False
-       while(n>=0 and iswhile):
+       while(Xlength>xmin):
           deltav1=(TargetLocation-self.WorldLocation[n]).normalized()
           detatav2=(self.WorldLocation[3]-self.WorldLocation[n]).normalized()
           axis=ti.math.cross(deltav1,detatav2).normalized()
@@ -136,10 +141,10 @@ class XlsBoneArray:
           self.rotator[n]=self.toEuler(self.Q[n])
           self.Fk(n)
           Xlength=(self.WorldLocation[3]-TargetLocation).norm()
-          print('xxx=',Xlength)
-          if(Xlength<2.0):
-             break
+          print('xxx=',Xlength,"xmin",xmin)
           n-=1
+          if(n<0):
+            n=2
 
 
     @ti.func 

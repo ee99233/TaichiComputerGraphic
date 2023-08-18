@@ -184,79 +184,79 @@ class XlsBoneArray:
     def Jcob(self,TargetLocation:ti.math.vec3):
        n=0
        axs_rot=ti.Matrix([[0]*9 for _ in range(3)],ti.float32)
-       print(axs_rot)
-      #  prevaxs_rot=ti.Matrix([[0]*1 for _ in range(9)],ti.float32)
-      #  result_rot=ti.Matrix([[0]*1 for _ in range(9)],ti.float32)
-      #  prevaxs_rot[0,0]=self.rotator[0][2]
-      #  prevaxs_rot[0,1]=self.rotator[0][1]
-      #  prevaxs_rot[0,2]=self.rotator[0][0]
-      #  prevaxs_rot[0,3]=self.rotator[1][2]
-      #  prevaxs_rot[0,4]=self.rotator[1][1]
-      #  prevaxs_rot[0,5]=self.rotator[1][0]
-      #  prevaxs_rot[0,6]=self.rotator[2][2]
-      #  prevaxs_rot[0,7]=self.rotator[2][1]
-      #  prevaxs_rot[0,8]=self.rotator[2][0]
-      #  deltar=TargetLocation-self.WorldLocation[2]
-      #  while(n<3):
-      #       deltarr=TargetLocation-self.WorldLocation[n]
-      #       xrad=self.rotator[n][0]/180.0*pi
-      #       self.XMat[n][0,0]=1.0
-      #       self.XMat[n][1,1]=ti.cos(xrad)
-      #       self.XMat[n][1,2]=-ti.sin(xrad)
-      #       self.XMat[n][2,1]=ti.sin(xrad)
-      #       self.XMat[n][2,2]=ti.cos(xrad)
-      #       yrad=self.rotator[n][1]/180.0*pi
-      #       self.YMat[n][1,1]=1.0
-      #       self.YMat[n][0,0]=ti.cos(yrad)
-      #       self.YMat[n][0,2]=ti.sin(yrad)
-      #       self.YMat[n][2,0]=-ti.sin(yrad)
-      #       self.YMat[n][2,2]=ti.cos(yrad)
-      #       zrad=self.rotator[n][2]/180.0*pi
-      #       self.ZMat[n][2,2]=1.0
-      #       self.ZMat[n][0,0]=ti.cos(zrad)
-      #       self.ZMat[n][0,1]=-ti.sin(zrad)
-      #       self.ZMat[n][1,0]=ti.sin(zrad)
-      #       self.ZMat[n][1,1]=ti.cos(zrad)
-      #       setaz=ti.Vector([0.0,0.0,0.0])
-      #       setay=ti.Vector([0.0,0.0,0.0])
-      #       setax=ti.Vector([0.0,0.0,0.0])
-      #       if(n==0):
-      #          axisz=ti.Vector([0.0,0.0,1.0])
-      #          setaz=ti.math.cross(axisz,deltarr)
-      #          axisy=ti.Vector([0.0,1.0,0.0])
-      #          setay=ti.math.cross(axisy,deltarr)
-      #          axisx=ti.Vector([1.0,0.0,0.0])
-      #          setax=ti.math.cross(axisx,deltarr)
-      #       else:
-      #          axisz=self.Q[n]@ti.Vector([0.0,0.0,1.0])
-      #          setaz=ti.math.cross(axisz,deltarr)
-      #          axisy=self.Q[n]@self.ZMat[n]@ti.Vector([0.0,1.0,0.0])
-      #          setay=ti.math.cross(axisy,deltarr)
-      #          axisx=self.Q[n]@self.ZMat[n]@self.YMat[n]@ti.Vector([1.0,0.0,0.0])
-      #          setax=ti.math.cross(axisx,deltarr)
-      #       axs_rot[n*3,0]=setaz[0]
-      #       axs_rot[n*3,1]=setaz[1]
-      #       axs_rot[n*3,2]=setaz[2]
-      #       axs_rot[n*3+1,0]=setay[0]
-      #       axs_rot[n*3+1,1]=setay[1]
-      #       axs_rot[n*3+1,2]=setay[2]
-      #       axs_rot[n*3+2,0]=setax[0]
-      #       axs_rot[n*3+2,1]=setax[1]
-      #       axs_rot[n*3+2,2]=setax[2]
-      #       n+=1
+       prevaxs_rot=ti.Matrix([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
+       result_rot=ti.Matrix([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
+       print(result_rot)
+       prevaxs_rot[0]=self.rotator[0][2]
+       prevaxs_rot[1]=self.rotator[0][1]
+       prevaxs_rot[2]=self.rotator[0][0]
+       prevaxs_rot[3]=self.rotator[1][2]
+       prevaxs_rot[4]=self.rotator[1][1]
+       prevaxs_rot[5]=self.rotator[1][0]
+       prevaxs_rot[6]=self.rotator[2][2]
+       prevaxs_rot[7]=self.rotator[2][1]
+       prevaxs_rot[8]=self.rotator[2][0]
+       deltar=TargetLocation-self.WorldLocation[2]
+       while(n<3):
+            deltarr=TargetLocation-self.WorldLocation[n]
+            xrad=self.rotator[n][0]/180.0*pi
+            self.XMat[n][0,0]=1.0
+            self.XMat[n][1,1]=ti.cos(xrad)
+            self.XMat[n][1,2]=-ti.sin(xrad)
+            self.XMat[n][2,1]=ti.sin(xrad)
+            self.XMat[n][2,2]=ti.cos(xrad)
+            yrad=self.rotator[n][1]/180.0*pi
+            self.YMat[n][1,1]=1.0
+            self.YMat[n][0,0]=ti.cos(yrad)
+            self.YMat[n][0,2]=ti.sin(yrad)
+            self.YMat[n][2,0]=-ti.sin(yrad)
+            self.YMat[n][2,2]=ti.cos(yrad)
+            zrad=self.rotator[n][2]/180.0*pi
+            self.ZMat[n][2,2]=1.0
+            self.ZMat[n][0,0]=ti.cos(zrad)
+            self.ZMat[n][0,1]=-ti.sin(zrad)
+            self.ZMat[n][1,0]=ti.sin(zrad)
+            self.ZMat[n][1,1]=ti.cos(zrad)
+            setaz=ti.Vector([0.0,0.0,0.0])
+            setay=ti.Vector([0.0,0.0,0.0])
+            setax=ti.Vector([0.0,0.0,0.0])
+            if(n==0):
+               axisz=ti.Vector([0.0,0.0,1.0])
+               setaz=ti.math.cross(axisz,deltarr)
+               axisy=ti.Vector([0.0,1.0,0.0])
+               setay=ti.math.cross(axisy,deltarr)
+               axisx=ti.Vector([1.0,0.0,0.0])
+               setax=ti.math.cross(axisx,deltarr)
+            else:
+               axisz=self.Q[n]@ti.Vector([0.0,0.0,1.0])
+               setaz=ti.math.cross(axisz,deltarr)
+               axisy=self.Q[n]@self.ZMat[n]@ti.Vector([0.0,1.0,0.0])
+               setay=ti.math.cross(axisy,deltarr)
+               axisx=self.Q[n]@self.ZMat[n]@self.YMat[n]@ti.Vector([1.0,0.0,0.0])
+               setax=ti.math.cross(axisx,deltarr)
+            axs_rot[n*3,0]=setaz[0]
+            axs_rot[n*3,1]=setaz[1]
+            axs_rot[n*3,2]=setaz[2]
+            axs_rot[n*3+1,0]=setay[0]
+            axs_rot[n*3+1,1]=setay[1]
+            axs_rot[n*3+1,2]=setay[2]
+            axs_rot[n*3+2,0]=setax[0]
+            axs_rot[n*3+2,1]=setax[1]
+            axs_rot[n*3+2,2]=setax[2]
+            n+=1
        #print(axs_rot)
-       #print(prevaxs_rot)
-       #result_rot=prevaxs_rot-0.05*deltar@axs_rot
-       #print(result_rot)
-      #  self.rotator[0][2]=result_rot[0,0]
-      #  self.rotator[0][1]=result_rot[0,1]
-      #  self.rotator[0][0]=result_rot[0,2]
-      #  self.rotator[1][2]=result_rot[0,3]
-      #  self.rotator[1][1]=result_rot[0,4]
-      #  self.rotator[1][0]=result_rot[0,5]
-      #  self.rotator[2][2]=result_rot[0,6]
-      #  self.rotator[2][1]=result_rot[0,7]
-      #  self.rotator[2][0]=result_rot[0,8]
+      # print(prevaxs_rot)
+       result_rot=prevaxs_rot+0.05*deltar@axs_rot
+       print(result_rot)
+       self.rotator[0][2]=result_rot[0]
+       self.rotator[0][1]=result_rot[1]
+       self.rotator[0][0]=result_rot[2]
+       self.rotator[1][2]=result_rot[3]
+       self.rotator[1][1]=result_rot[4]
+       self.rotator[1][0]=result_rot[5]
+       self.rotator[2][2]=result_rot[6]
+       self.rotator[2][1]=result_rot[7]
+       self.rotator[2][0]=result_rot[8]
 
                  
 indices[0]=0;

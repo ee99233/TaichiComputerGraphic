@@ -9,7 +9,7 @@ vertics=ti.Vector.field(3,dtype=float,shape=4);
 indices=ti.field(int,shape=8);
 TempRotation=ti.Vector.field(3,dtype=float,shape=4);
 colors = ti.Vector.field(3, dtype=float, shape=4);
-TempLocation = ti.Vector([-2.0,-2.0,0.0])
+TempLocation = ti.Vector([-2.0,-3.0,0.0])
 TargetLocation = ti.Vector([0.0,0.0,0.0])
 @ti.data_oriented
 class XlsBoneArray: 
@@ -180,13 +180,12 @@ class XlsBoneArray:
       Rotator[1]= Rotator[1]*180.0/pi#pitch
       Rotator[2]= Rotator[2]*180.0/pi#yaw
       return Rotator 
-    @ti.kernel
+    @ti.func
     def Jcob(self,TargetLocation:ti.math.vec3):
        n=0
        axs_rot=ti.Matrix([[0]*9 for _ in range(3)],ti.float32)
        prevaxs_rot=ti.Matrix([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
        result_rot=ti.Matrix([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
-       print(result_rot)
        prevaxs_rot[0]=self.rotator[0][2]
        prevaxs_rot[1]=self.rotator[0][1]
        prevaxs_rot[2]=self.rotator[0][0]
@@ -196,7 +195,7 @@ class XlsBoneArray:
        prevaxs_rot[6]=self.rotator[2][2]
        prevaxs_rot[7]=self.rotator[2][1]
        prevaxs_rot[8]=self.rotator[2][0]
-       deltar=TargetLocation-self.WorldLocation[2]
+       deltar=TargetLocation-self.WorldLocation[3]
        while(n<3):
             deltarr=TargetLocation-self.WorldLocation[n]
             xrad=self.rotator[n][0]/180.0*pi
@@ -222,31 +221,35 @@ class XlsBoneArray:
             setax=ti.Vector([0.0,0.0,0.0])
             if(n==0):
                axisz=ti.Vector([0.0,0.0,1.0])
-               setaz=ti.math.cross(axisz,deltarr)
+               setaz=ti.math.cross(deltarr,axisz)
                axisy=ti.Vector([0.0,1.0,0.0])
-               setay=ti.math.cross(axisy,deltarr)
+               setay=ti.math.cross(deltarr,axisy)
                axisx=ti.Vector([1.0,0.0,0.0])
-               setax=ti.math.cross(axisx,deltarr)
+               setax=ti.math.cross(deltarr,axisx)
             else:
                axisz=self.Q[n]@ti.Vector([0.0,0.0,1.0])
-               setaz=ti.math.cross(axisz,deltarr)
+               #print(self.Q[n])
+               setaz=ti.math.cross(deltarr,axisz)
                axisy=self.Q[n]@self.ZMat[n]@ti.Vector([0.0,1.0,0.0])
-               setay=ti.math.cross(axisy,deltarr)
+               setay=ti.math.cross(deltarr,axisy)
                axisx=self.Q[n]@self.ZMat[n]@self.YMat[n]@ti.Vector([1.0,0.0,0.0])
-               setax=ti.math.cross(axisx,deltarr)
-            axs_rot[n*3,0]=setaz[0]
-            axs_rot[n*3,1]=setaz[1]
-            axs_rot[n*3,2]=setaz[2]
-            axs_rot[n*3+1,0]=setay[0]
-            axs_rot[n*3+1,1]=setay[1]
-            axs_rot[n*3+1,2]=setay[2]
-            axs_rot[n*3+2,0]=setax[0]
-            axs_rot[n*3+2,1]=setax[1]
-            axs_rot[n*3+2,2]=setax[2]
+               setax=ti.math.cross(deltarr,axisx)
+            #print('setaz=',setaz,'setay=',setay,'setax=',setax)
+            axs_rot[0,3*n]=setaz[0]
+            axs_rot[1,3*n]=setaz[1]
+            axs_rot[2,3*n]=setaz[2]
+            axs_rot[0,3*n+1]=setay[0]
+            axs_rot[1,3*n+1]=setay[1]
+            axs_rot[2,3*n+1]=setay[2]
+            axs_rot[0,3*n+2]=setax[0]
+            axs_rot[1,3*n+2]=setax[1]
+            axs_rot[2,3*n+2]=setax[2]
             n+=1
-       #print(axs_rot)
-      # print(prevaxs_rot)
-       result_rot=prevaxs_rot+0.05*deltar@axs_rot
+      #  for i in range(3):
+      #     for j in range(9):
+      #        print('i=',i,'j=',j,axs_rot[i,j])
+       result_rot=prevaxs_rot-0.2*deltar@axs_rot
+       #print(deltar)
        print(result_rot)
        self.rotator[0][2]=result_rot[0]
        self.rotator[0][1]=result_rot[1]
@@ -257,7 +260,17 @@ class XlsBoneArray:
        self.rotator[2][2]=result_rot[6]
        self.rotator[2][1]=result_rot[7]
        self.rotator[2][0]=result_rot[8]
-
+       self.Fk(0)
+    @ti.kernel
+    def JcobIk(self,TargetLocation:ti.math.vec3):
+       Xlength=(TargetLocation-self.WorldLocation[3]).norm()
+       n=200
+       while(n>0):
+          self.Jcob(TargetLocation)
+          Xlength=(TargetLocation-self.WorldLocation[3]).norm()
+          print(Xlength)
+          n-=1
+      
                  
 indices[0]=0;
 indices[1]=1;
@@ -283,7 +296,7 @@ XlSArray.init()
 XlSArray.UpdateLocation()
 Iklocation=XlSArray.GetLocation(3)
 TargetLocation=TempLocation+Iklocation
-XlSArray.Jcob(TargetLocation)
+XlSArray.JcobIk(TargetLocation)
 for i in range(4):
     vertics[i]=XlSArray.GetLocation(i)
     #print(vertics[i])
